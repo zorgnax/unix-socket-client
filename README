@@ -1,0 +1,18 @@
+unix-socket-client
+
+I was messing around with memcached, which has an option to run a local
+daemon using a unix socket rather than binding to a tcp port, and was
+looking for a program that could interact with it like telnet could with
+internet hosts, but couldn't find any, other than a non-standard patch
+to netcat, which wasn't installed on the needed machine, so I created
+this.
+
+The client works by sending stdin to the socket and printing data read
+from the socket to stdout.
+
+A simple server is provided for testing. It will run a given command for
+each connected peer. It is only capable of handling one peer at a time.
+
+Install by running make. Copy the executables whereever (into your $PATH
+for instance).
+
