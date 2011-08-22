@@ -16,13 +16,13 @@ void die (const char *mesg) {
 }
 
 void end () {
-	unlink(path);
-	exit(0);
+    unlink(path);
+    exit(0);
 }
 
 int unixsocket (const char *path) {
     struct sockaddr_un myaddr = {0};
-	int sock = socket(AF_UNIX, SOCK_STREAM, 0);
+    int sock = socket(AF_UNIX, SOCK_STREAM, 0);
     if (sock < 0)
         die("socket");
     myaddr.sun_family = AF_UNIX;
@@ -31,7 +31,7 @@ int unixsocket (const char *path) {
         die("bind");
     if (listen(sock, 0) < 0)
         die("listen");
-	return sock;
+    return sock;
 }
 
 void init (const char *path, char **cmdav) {
@@ -39,27 +39,27 @@ void init (const char *path, char **cmdav) {
     pid_t pid;
     int status;
     struct sockaddr_un peeraddr = {0};
-	socklen_t peerlen = sizeof peeraddr;
-	int sock = unixsocket(path);
-	signal(SIGINT, end);
-	while (1) {
-		peer = accept(sock, &peeraddr, &peerlen);
-		if (peer < 0)
-			die("accept");
-		printf("client connected\n");
-		pid = fork();
-		if (pid < 0)
-			die("fork");
-		else if (!pid) {
-			dup2(peer, 0);
-			dup2(peer, 1);
-			close(peer);
-			execvp(cmdav[0], cmdav);
-			die("execvp");
-		}
-		close(peer);
-		wait(&status);
-	}
+    socklen_t peerlen = sizeof peeraddr;
+    int sock = unixsocket(path);
+    signal(SIGINT, end);
+    while (1) {
+        peer = accept(sock, &peeraddr, &peerlen);
+        if (peer < 0)
+            die("accept");
+        printf("client connected\n");
+        pid = fork();
+        if (pid < 0)
+            die("fork");
+        else if (!pid) {
+            dup2(peer, 0);
+            dup2(peer, 1);
+            close(peer);
+            execvp(cmdav[0], cmdav);
+            die("execvp");
+        }
+        close(peer);
+        wait(&status);
+    }
     close(sock);
 }
 
